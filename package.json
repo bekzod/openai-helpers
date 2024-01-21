@@ -1,4 +1,16 @@
 {
-  "name": "openai",
-  "packageManager": "yarn@4.0.2"
+  "name": "openai-helpers",
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "debug": "^4.3.4",
+    "openai": "^4.24.7"
+  },
+  "volta": {
+    "node": "20.10.0",
+    "yarn": "1.22.19"
+  },
+  "engines": {
+    "node": "20.x",
+    "yarn": "1.22.x"
+  }
 }
