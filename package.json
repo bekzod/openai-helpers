@@ -1,5 +1,10 @@
 {
   "name": "openai-helpers",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": ""
+  },
   "dependencies": {
     "bluebird": "^3.7.2",
     "debug": "^4.3.4",

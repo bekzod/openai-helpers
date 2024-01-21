@@ -20,7 +20,7 @@ This repository contains a Node.js module that facilitates interaction with the 
 To use this library, you'll need to have Node.js installed on your system. Clone this repository and install the required dependencies using npm:
 
 ```bash
-npm install
+yarn add openai-helpers
 ```
 
 ## Usage
