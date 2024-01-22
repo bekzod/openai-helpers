@@ -79,6 +79,7 @@ async function observeRun({ id, thread_id }) {
     await Promise.delay(200);
     status = run.status;
   }
+  let { usage } = run;
 
   if (status === 'completed') {
     const threadMessages = await openai.beta.threads.messages.list(thread_id, {
@@ -89,6 +90,7 @@ async function observeRun({ id, thread_id }) {
       content: threadMessages.data[0].content[0].text.value,
       annotations: threadMessages.data[0].content[0].text.annotations,
       thread_id,
+      usage,
       id: threadMessages.data[0].id,
     };
   } else if (status === 'requires_action') {
@@ -116,14 +118,15 @@ async function observeRun({ id, thread_id }) {
 
     let functionOutputs = toolCalls.map(toolCall => {
       return {
+        usage,
         content: JSON.parse(toolCall.function.arguments),
         name: toolCall.function.name
       };
     });
 
-    return { type: 'function', content: functionOutputs, thread_id, submit };
+    return { type: 'function', content: functionOutputs, thread_id, submit, usage };
   } else {
-    return { type: 'error', thread_id, content: run.last_error?.message };
+    return { type: 'error', thread_id, content: run.last_error?.message, usage };
   }
 }
 
