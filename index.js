@@ -74,11 +74,19 @@ async function observeRun({ id, thread_id }) {
   let status = 'in_progress';
   let run;
 
+  let delay = 250;
+  const delayDecrement = 75;
+  const minDelay = 100;
+
   while (status === 'in_progress' || status === 'queued') {
     run = await openai.beta.threads.runs.retrieve(thread_id, id);
-    await Promise.delay(200);
+    await Promise.delay(delay);
     status = run.status;
+
+    // Decrease the delay for the next iteration, but not below the minimum threshold
+    delay = Math.max(minDelay, delay - delayDecrement);
   }
+
   let { usage } = run;
 
   if (status === 'completed') {
