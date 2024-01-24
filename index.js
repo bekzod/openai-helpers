@@ -14,7 +14,7 @@ async function runQuery(messages, { threadId, assistantId, additionalInstruction
         await createMessage(threadId, val);
       });
     } catch (e) {
-      if (e.code === 400) {
+      if (e.status === 400) {
         const { data } = await openai.beta.threads.runs.list(
           threadId, { limit: 1 }
         );
