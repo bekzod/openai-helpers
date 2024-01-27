@@ -20,7 +20,7 @@ async function runQuery(messages, { threadId, assistantId, additionalInstruction
         );
         let latestRun = data[0];
         if (latestRun?.status === 'running' || latestRun?.status === 'requires_action') {
-          return data[0];
+          await openai.beta.threads.runs.cancel(threadId, latestRun.id);
         }
       } else {
         throw e
@@ -172,7 +172,9 @@ async function getAnswer(messages, args = {}) {
     ...args,
   });
   debug('end request');
-  return response.choices[0].message.content;
+
+  let { usage } = response;
+  return { usage, content: response.choices[0].message.content, toolCalls: response.choices[0].message.tool_calls };
 }
 
 
