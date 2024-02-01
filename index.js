@@ -161,7 +161,7 @@ async function getAnswer(messages, args = {}) {
 
   debug('start request');
   const response = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo-1106',
+    model: 'gpt-3.5-turbo',
     messages,
     // response_format: { type: 'json_object' },
     temperature: 0,
