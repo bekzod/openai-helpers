@@ -4,6 +4,7 @@ const debug = require('debug')('openai');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  timeout: 3 * 60 * 1000
 });
 
 async function runQuery(messages, { threadId, assistantId, additionalInstructions } = {}) {
@@ -19,6 +20,7 @@ async function runQuery(messages, { threadId, assistantId, additionalInstruction
           threadId, { limit: 1 }
         );
         let latestRun = data[0];
+        console.log(latestRun)
         if (['running', 'requires_action', 'queued', 'in_progress'].includes(latestRun?.status)) {
           await openai.beta.threads.runs.cancel(threadId, latestRun.id);
         } else {
@@ -99,7 +101,7 @@ async function observeRun({ id, thread_id }) {
   const delayDecrement = 75;
   const minDelay = 100;
 
-  while (status === 'in_progress' || status === 'queued') {
+  while (['in_progress', 'queued', 'cancelling'].includes(status)) {
     run = await openai.beta.threads.runs.retrieve(thread_id, id);
     await Promise.delay(delay);
     status = run.status;
