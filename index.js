@@ -19,9 +19,16 @@ async function runQuery(messages, { threadId, assistantId, additionalInstruction
           threadId, { limit: 1 }
         );
         let latestRun = data[0];
-        if (latestRun?.status === 'running' || latestRun?.status === 'requires_action') {
+
+        if (['running', 'requires_action', 'queued', 'in_progress'].includes(latestRun?.status)) {
           await openai.beta.threads.runs.cancel(threadId, latestRun.id);
+        } else {
+          await observeRun({ threadId, id: latestRun.id });
         }
+
+        await Promise.each(messages, async function (val) {
+          await createMessage(threadId, val);
+        });
       } else {
         throw e
       }
