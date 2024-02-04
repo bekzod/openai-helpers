@@ -22,9 +22,8 @@ async function runQuery(messages, { threadId, assistantId, additionalInstruction
         let latestRun = data[0];
         if (['running', 'requires_action', 'queued', 'in_progress'].includes(latestRun?.status)) {
           await openai.beta.threads.runs.cancel(threadId, latestRun.id);
-        } else {
-          await observeRun({ thread_id: threadId, id: latestRun.id });
         }
+        await observeRun({ thread_id: threadId, id: latestRun.id });
 
         await Promise.each(messages, async function (val) {
           await createMessage(threadId, val);
@@ -96,17 +95,11 @@ async function observeRun({ id, thread_id }) {
   let status = 'in_progress';
   let run;
 
-  let delay = 250;
-  const delayDecrement = 75;
-  const minDelay = 100;
-
+  let delay = 180;
   while (['in_progress', 'queued', 'cancelling'].includes(status)) {
-    run = await openai.beta.threads.runs.retrieve(thread_id, id);
     await Promise.delay(delay);
+    run = await openai.beta.threads.runs.retrieve(thread_id, id);
     status = run.status;
-
-    // Decrease the delay for the next iteration, but not below the minimum threshold
-    delay = Math.max(minDelay, delay - delayDecrement);
   }
 
   let { usage } = run;
